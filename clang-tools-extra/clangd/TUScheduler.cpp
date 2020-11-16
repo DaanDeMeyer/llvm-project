@@ -627,10 +627,14 @@ void ASTWorker::update(ParseInputs Inputs, WantDiagnostics WantDiags) {
       FileInputs = Inputs;
     }
 
-    log("ASTWorker building file {0} version {1} with command {2}\n[{3}]\n{4}",
+    log("ASTWorker building file {0} version {1}", FileName, Inputs.Version);
+    vlog("ASTWorker building file {0} version {1} with command {2}\n[{3}]\n{4}",
         FileName, Inputs.Version, Inputs.CompileCommand.Heuristic,
         Inputs.CompileCommand.Directory,
         llvm::join(Inputs.CompileCommand.CommandLine, " "));
+
+    if (!InputsAreTheSame)
+      log("ASTWorker inputs are not the same, cached AST is invalidated");
 
     StoreDiags CompilerInvocationDiagConsumer;
     std::vector<std::string> CC1Args;
