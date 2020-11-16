@@ -65,6 +65,8 @@ public:
   llvm::Optional<tooling::CompileCommand>
   getCompileCommand(PathRef File) const override;
 
+  tooling::CompilationDatabase *lookupCDB(PathRef File) const override;
+
   llvm::Optional<ProjectInfo> getProjectInfo(PathRef File) const override;
 
   std::vector<std::string> ExtraClangFlags;

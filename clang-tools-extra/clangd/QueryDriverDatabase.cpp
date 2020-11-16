@@ -277,6 +277,10 @@ public:
     return addSystemIncludes(*Cmd, SystemIncludes);
   }
 
+  tooling::CompilationDatabase *lookupCDB(PathRef File) const override {
+    return Base->lookupCDB(File);
+  }
+
   llvm::Optional<ProjectInfo> getProjectInfo(PathRef File) const override {
     return Base->getProjectInfo(File);
   }

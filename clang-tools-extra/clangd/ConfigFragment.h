@@ -174,6 +174,16 @@ struct Fragment {
     std::vector<Located<std::string>> FullyQualifiedNamespaces;
   };
   StyleBlock Style;
+
+  struct ASTBlock {
+    /// Controls whether clangd prebuilds the AST for the current file. When
+    /// opening a file for the first time. clangd iterates over all the files in
+    /// its compilation database and prebuilds the AST for those that have this
+    /// option set to "PreBuild". Legal values are "PreBuild" or "OnDemand".
+    /// Default is "OnDemand".
+    llvm::Optional<Located<std::string>> Build;
+  };
+  ASTBlock AST;
 };
 
 } // namespace config

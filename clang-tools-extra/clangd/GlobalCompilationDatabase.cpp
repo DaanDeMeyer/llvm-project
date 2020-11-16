@@ -68,6 +68,20 @@ DirectoryBasedGlobalCompilationDatabase::
 
 llvm::Optional<tooling::CompileCommand>
 DirectoryBasedGlobalCompilationDatabase::getCompileCommand(PathRef File) const {
+  auto *CDB = lookupCDB(File);
+  if (!CDB) {
+    return llvm::None;
+  }
+
+  auto Candidates = CDB->getCompileCommands(File);
+  if (!Candidates.empty())
+    return std::move(Candidates.front());
+
+  return None;
+}
+
+tooling::CompilationDatabase *
+DirectoryBasedGlobalCompilationDatabase::lookupCDB(PathRef File) const {
   CDBLookupRequest Req;
   Req.FileName = File;
   Req.ShouldBroadcast = true;
@@ -75,14 +89,10 @@ DirectoryBasedGlobalCompilationDatabase::getCompileCommand(PathRef File) const {
   auto Res = lookupCDB(Req);
   if (!Res) {
     log("Failed to find compilation database for {0}", File);
-    return llvm::None;
+    return nullptr;
   }
 
-  auto Candidates = Res->CDB->getCompileCommands(File);
-  if (!Candidates.empty())
-    return std::move(Candidates.front());
-
-  return None;
+  return Res->CDB;
 }
 
 // For platforms where paths are case-insensitive (but case-preserving),
@@ -268,6 +278,10 @@ OverlayCDB::getCompileCommand(PathRef File) const {
   if (ArgsAdjuster)
     Cmd->CommandLine = ArgsAdjuster(Cmd->CommandLine, Cmd->Filename);
   return Cmd;
+}
+
+tooling::CompilationDatabase *OverlayCDB::lookupCDB(PathRef File) const {
+  return Base ? Base->lookupCDB(File) : nullptr;
 }
 
 tooling::CompileCommand OverlayCDB::getFallbackCommand(PathRef File) const {

@@ -70,6 +70,13 @@ struct Config {
     // ::). All nested namespaces are affected as well.
     std::vector<std::string> FullyQualifiedNamespaces;
   } Style;
+
+  enum class ASTPolicy { PreBuild, OnDemand };
+  /// Controls AST prebuild behavior.
+  struct {
+    /// Whether this AST should be prebuild.
+    ASTPolicy Build = ASTPolicy::OnDemand;
+  } AST;
 };
 
 } // namespace clangd

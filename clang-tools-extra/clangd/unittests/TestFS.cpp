@@ -71,6 +71,11 @@ MockCompilationDatabase::getCompileCommand(PathRef File) const {
                                   FileName, std::move(CommandLine), "")};
 }
 
+tooling::CompilationDatabase *
+MockCompilationDatabase::lookupCDB(PathRef File) const {
+  return nullptr;
+}
+
 const char *testRoot() {
 #ifdef _WIN32
   return "C:\\clangd-test";

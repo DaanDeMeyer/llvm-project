@@ -70,6 +70,10 @@ class OverlayCDBTest : public ::testing::Test {
       return None;
     }
 
+    tooling::CompilationDatabase *lookupCDB(PathRef File) const override {
+      return nullptr;
+    }
+
     tooling::CompileCommand
     getFallbackCommand(llvm::StringRef File) const override {
       return cmd(File, "-DA=2");

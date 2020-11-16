@@ -157,6 +157,7 @@ struct FragmentCompiler {
     compile(std::move(F.If));
     compile(std::move(F.CompileFlags));
     compile(std::move(F.Index));
+    compile(std::move(F.AST));
   }
 
   void compile(Fragment::IfBlock &&F) {
@@ -261,6 +262,18 @@ struct FragmentCompiler {
             C.Style.FullyQualifiedNamespaces.begin(),
             FullyQualifiedNamespaces.begin(), FullyQualifiedNamespaces.end());
       });
+    }
+  }
+
+  void compile(Fragment::ASTBlock &&F) {
+    if (F.Build) {
+      if (auto Val = compileEnum<Config::ASTPolicy>("Build", **F.Build)
+                         .map("OnDemand", Config::ASTPolicy::OnDemand)
+                         .map("PreBuild", Config::ASTPolicy::PreBuild)
+                         .value()) {
+        Out.Apply.push_back(
+            [Val](const Params &, Config &C) { C.AST.Build = *Val; });
+      }
     }
   }
 

@@ -40,6 +40,7 @@ public:
     Dict.handle("CompileFlags", [&](Node &N) { parse(F.CompileFlags, N); });
     Dict.handle("Index", [&](Node &N) { parse(F.Index, N); });
     Dict.handle("Style", [&](Node &N) { parse(F.Style, N); });
+    Dict.handle("AST", [&](Node &N) { parse(F.AST, N); });
     Dict.parse(N);
     return !(N.failed() || HadError);
   }
@@ -86,6 +87,12 @@ private:
     DictParser Dict("Index", this);
     Dict.handle("Background",
                 [&](Node &N) { F.Background = scalarValue(N, "Background"); });
+    Dict.parse(N);
+  }
+
+  void parse(Fragment::ASTBlock &F, Node &N) {
+    DictParser Dict("AST", this);
+    Dict.handle("Build", [&](Node &N) { F.Build = scalarValue(N, "Build"); });
     Dict.parse(N);
   }
 

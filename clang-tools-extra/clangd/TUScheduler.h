@@ -231,6 +231,8 @@ public:
   /// Returns true if the file was not previously tracked.
   bool update(PathRef File, ParseInputs Inputs, WantDiagnostics WD);
 
+  bool hasFile(PathRef File);
+
   /// Remove \p File from the list of tracked files and schedule removal of its
   /// resources. Pending diagnostics for closed files may not be delivered, even
   /// if requested with WantDiags::Auto or WantDiags::Yes.

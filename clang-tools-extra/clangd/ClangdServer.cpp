@@ -172,7 +172,7 @@ ClangdServer::Options::operator TUScheduler::Options() const {
 ClangdServer::ClangdServer(const GlobalCompilationDatabase &CDB,
                            const ThreadsafeFS &TFS, const Options &Opts,
                            Callbacks *Callbacks)
-    : ConfigProvider(Opts.ConfigProvider), TFS(TFS),
+    : ConfigProvider(Opts.ConfigProvider), CDB(CDB), TFS(TFS),
       DynamicIdx(Opts.BuildDynamicSymbolIndex
                      ? new FileIndex(Opts.HeavyweightDynamicSymbolIndex,
                                      Opts.CollectMainFileRefs)
@@ -257,7 +257,7 @@ void ClangdServer::addDocument(PathRef File, llvm::StringRef Contents,
   Inputs.Contents = std::string(Contents);
   Inputs.Version = Version.str();
   Inputs.ForceRebuild = ForceRebuild;
-  Inputs.Opts = std::move(Opts);
+  Inputs.Opts = Opts;
   Inputs.Index = Index;
   Inputs.Opts.BuildRecoveryAST = BuildRecoveryAST;
   Inputs.Opts.PreserveRecoveryASTType = PreserveRecoveryASTType;
@@ -265,6 +265,23 @@ void ClangdServer::addDocument(PathRef File, llvm::StringRef Contents,
   // If we loaded Foo.h, we want to make sure Foo.cpp is indexed.
   if (NewFile && BackgroundIdx)
     BackgroundIdx->boostRelated(File);
+
+  if (NewFile) {
+    if (auto *InternalCDB = CDB.lookupCDB(File)) {
+      for (const auto &CDBFile : InternalCDB->getAllFiles()) {
+        if (CDBFile != File && !WorkScheduler.hasFile(CDBFile)) {
+          WithContext WithContext(createProcessingContext(CDBFile));
+          if (Config::current().AST.Build == Config::ASTPolicy::PreBuild) {
+            auto Buffer = llvm::MemoryBuffer::getFile(CDBFile);
+            Inputs.Contents = std::string(Buffer->get()->getBuffer());
+            WorkScheduler.update(CDBFile, Inputs, WantDiagnostics::No);
+            if (BackgroundIdx)
+              BackgroundIdx->boostRelated(CDBFile);
+          }
+        }
+      }
+    }
+  }
 }
 
 void ClangdServer::removeDocument(PathRef File) { WorkScheduler.remove(File); }

@@ -1123,6 +1123,10 @@ TEST(ClangdServerTest, FallbackWhenWaitingForCompileCommand) {
                                       FileName, std::move(CommandLine), "")};
     }
 
+    tooling::CompilationDatabase *lookupCDB(PathRef File) const override {
+      return nullptr;
+    }
+
     std::vector<std::string> ExtraClangFlags;
 
   private:

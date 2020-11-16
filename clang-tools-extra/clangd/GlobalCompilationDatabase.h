@@ -40,6 +40,8 @@ public:
   virtual llvm::Optional<tooling::CompileCommand>
   getCompileCommand(PathRef File) const = 0;
 
+  virtual tooling::CompilationDatabase *lookupCDB(PathRef File) const = 0;
+
   /// Finds the closest project to \p File.
   virtual llvm::Optional<ProjectInfo> getProjectInfo(PathRef File) const {
     return llvm::None;
@@ -75,6 +77,8 @@ public:
   /// Might trigger OnCommandChanged, if CDB wasn't broadcasted yet.
   llvm::Optional<tooling::CompileCommand>
   getCompileCommand(PathRef File) const override;
+
+  virtual tooling::CompilationDatabase *lookupCDB(PathRef File) const override;
 
   /// Returns the path to first directory containing a compilation database in
   /// \p File's parents.
@@ -132,6 +136,9 @@ public:
 
   llvm::Optional<tooling::CompileCommand>
   getCompileCommand(PathRef File) const override;
+
+  tooling::CompilationDatabase *lookupCDB(PathRef File) const override;
+
   tooling::CompileCommand getFallbackCommand(PathRef File) const override;
   /// Project info is gathered purely from the inner compilation database to
   /// ensure consistency.
