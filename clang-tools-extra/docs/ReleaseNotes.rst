@@ -204,7 +204,7 @@ Changes in existing checks
   diagnosing designated initializers for ``std::array`` initializations.
 
 - Improved :doc:`modernize-use-ranges
-  <clang-tidy/checks/modernize/use-ranges>` check by updating suppress 
+  <clang-tidy/checks/modernize/use-ranges>` check by updating suppress
   warnings logic for ``nullptr`` in ``std::find``.
 
 - Improved :doc:`modernize-use-starts-ends-with
@@ -224,6 +224,11 @@ Changes in existing checks
   <clang-tidy/checks/performance/unnecessary-value-param>` check performance by
   tolerating fix-it breaking compilation when functions is used as pointers
   to avoid matching usage of functions within the current compilation unit.
+
+- Improved :doc:`misc-include-cleaner
+  <clang-tidy/checks/misc/include-cleaner>` check by adding the options
+  `UnusedIncludes` and `MissingIncludes`, which specify whether the check should
+  report unused or missing includes respectively.
 
 Removed checks
 ^^^^^^^^^^^^^^

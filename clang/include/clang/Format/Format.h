@@ -4382,8 +4382,19 @@ struct FormatStyle {
     ///    #include "B/a.h"           #include "a/b.h"
     /// \endcode
     bool IgnoreCase;
+    /// When sorting includes in each block, Only take file extensions into
+    /// account if two includes compare equal otherwise.
+    /// \code
+    ///    true:                      false:
+    ///    # include "A.h"             # include "A-util.h"
+    ///    # include "A.inc"           # include "A.h"
+    ///    # include "A-util.h"        # include "A.inc"
+    /// \endcode
+    /// \version 21
+    bool IgnoreExtension;
     bool operator==(const SortIncludesOptions &R) const {
-      return Enabled == R.Enabled && IgnoreCase == R.IgnoreCase;
+      return Enabled == R.Enabled && IgnoreCase == R.IgnoreCase &&
+             IgnoreExtension == R.IgnoreExtension;
     }
     bool operator!=(const SortIncludesOptions &R) const {
       return !(*this == R);
